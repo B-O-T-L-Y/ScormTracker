@@ -1,0 +1,47 @@
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: _docker/nginx/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - backend
+
+  backend:
+    container_name: backend
+    build:
+      args:
+        user: scorm_user
+        uid: 1000
+      context: .
+      dockerfile: _docker/php/Dockerfile
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: scorm_db
+      MYSQL_USER: scorm_user
+      MYSQL_PASSWORD: secret
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - mysql
+
+  mysql:
+    container_name: mysql
+    build:
+      context: .
+      dockerfile: _docker/mysql/Dockerfile
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: scorm_db
+      MYSQL_USER: scorm_user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db_data:/var/lib/mysql
