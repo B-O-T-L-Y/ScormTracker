@@ -14,6 +14,7 @@ RUN apk --no-cache update && apk add --no-cache \
     freetype-dev \
     libmcrypt-dev \
     libxml2-dev \
+    icu-dev \
     autoconf \
     g++ \
     make \
@@ -24,6 +25,9 @@ RUN docker-php-ext-configure zip && \
     docker-php-ext-install zip pdo_mysql opcache
 RUN docker-php-ext-configure pcntl --enable-pcntl && \
     docker-php-ext-install pcntl
+
+# Install intl
+RUN docker-php-ext-install intl
 
 # Create a non-root user with specified UID and group for running the app securely
 RUN addgroup -g $uid -S $user && \

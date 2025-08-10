@@ -45,3 +45,10 @@ services:
       - "3306:3306"
     volumes:
       - ./db_data:/var/lib/mysql
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
