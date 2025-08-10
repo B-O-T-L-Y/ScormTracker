@@ -44,11 +44,14 @@ class ExtractScormZipJob implements ShouldQueue
             'targetPath' => $targetPath
         ]);
 
+        if ($disk->exists($relativeTarget)) {
+            $disk->deleteDirectory($relativeTarget);
+        }
+
         $disk->makeDirectory($relativeTarget);
 
         $zip = new ZipArchive();
         $code = $zip->open($zipPath);
-
         if ($code === true) {
             if (! $zip->extractTo($targetPath)) {
                 $zip->close();
@@ -66,7 +69,6 @@ class ExtractScormZipJob implements ShouldQueue
             return;
         }
 
-        // --- Расшифровка кода ошибки ---
         $errorMap = [
             ZipArchive::ER_MULTIDISK => 'Multi-disk zip archives not supported',
             ZipArchive::ER_RENAME => 'Renaming temporary file failed',

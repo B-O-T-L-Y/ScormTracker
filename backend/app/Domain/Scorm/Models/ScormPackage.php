@@ -31,6 +31,15 @@ class ScormPackage extends Model
         'path',
     ];
 
+    protected static function booted(): void
+    {
+        static::deleting(function (ScormPackage $package) {
+            if (! empty($package->path)) {
+                Storage::disk(config('scorm.scorm_disk'))->deleteDirectory($package->path);
+            }
+        });
+    }
+
     public function stats(): HasMany
     {
         return $this->hasMany(ScormUserStat::class);
