@@ -47,6 +47,24 @@ class ScormPackage extends Model
 
     public function getUrl(): string
     {
-        return Storage::disk(config('scorm.scorm_disk'))->url($this->path . '/index.html');
+        $disk = Storage::disk(config('scorm.scorm_disk'));
+        $base = trim($this->path, '/');
+
+        $candidates = [
+            'index_lms.html',
+            'index.html',
+            'story.html',
+            'lms/index_lms.html',
+            'html5/index.html',
+            'story_content/index.html',
+        ];
+
+        foreach ($candidates as $rel) {
+            if ($disk->exists($base.'/'.$rel)) {
+                return route('scorm.file', [$this, 'path' => $rel]);
+            }
+        }
+
+        return route('scorm.file', [$this, 'path' => 'index.html']);
     }
 }

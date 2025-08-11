@@ -4,15 +4,19 @@ namespace App\Domain\Scorm\Repositories;
 
 use App\Domain\Scorm\Models\ScormPackage;
 use App\Jobs\ExtractScormZipJob;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ScormRepository
 {
-    public function all(): Collection
+    public function all(): LengthAwarePaginator
     {
-        return ScormPackage::with('stats')->latest()->get();
+        return ScormPackage::query()
+            ->with(['stats' => fn ($q) => $q->where('user_id', Auth::id())])
+            ->latest()
+            ->paginate(12);
     }
 
     public function store(UploadedFile $file, string $title): ScormPackage

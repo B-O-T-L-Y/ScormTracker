@@ -6,7 +6,6 @@ use App\Domain\Scorm\Models\ScormPackage;
 use App\Domain\Scorm\Models\ScormUserStat;
 use App\Domain\Scorm\Repositories\ScormRepository;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ScormController extends Controller
@@ -31,17 +30,5 @@ class ScormController extends Controller
         $stat->update(['last_viewed_at' => now()]);
 
         return view('scorm.show', ['url' => $scorm->getUrl()]);
-    }
-
-    public function store(Request $request, ScormRepository $repository)
-    {
-        $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'file' => ['required', 'file', 'mimes:zip'],
-        ]);
-
-        $repository->store($request->file('file'), $request->title);
-
-        return redirect()->route('scorm.index')->with('success', 'Scorm package created successfully.');
     }
 }
